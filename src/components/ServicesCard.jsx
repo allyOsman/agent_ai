@@ -1,55 +1,86 @@
 import { useRef, useState } from "react";
 import { motion } from "motion/react";
 
+/**
+ * ServicesCard Component
+ * Interactive service card with hover effects and animated gradient
+ * @param {Object} props - Component props
+ * @param {Object} props.service - Service data object
+ * @param {number} props.index - Card index for staggered animation
+ */
 export default function ServicesCard({ service, index }) {
+  // State for gradient position tracking
   const [position, setPosition] = useState({ x: 0, y: 0 });
+
+  // State for gradient visibility
   const [visible, setVisible] = useState(false);
 
+  // Ref for card container DOM element
   const divRef = useRef(null);
 
+  /**
+   * Handle mouse movement within card
+   * Updates gradient position based on mouse coordinates
+   * @param {MouseEvent} event - Mouse move event
+   */
   function handleMouseMove(event) {
+    // Get card boundaries
     const bounds = divRef.current.getBoundingClientRect();
+
+    // Calculate relative mouse position within card
     setPosition({
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top,
+      x: event.clientX - bounds.left, // X position relative to card
+      y: event.clientY - bounds.top, // Y position relative to card
     });
   }
 
   return (
+    // Animated card container
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: index * 0.2 }}
-      viewport={{ once: true }}
+      initial={{ opacity: 0, y: 30 }} // Start animation state
+      whileInView={{ opacity: 1, y: 0 }} // Animation when in viewport
+      transition={{ duration: 0.5, delay: index * 0.2 }} // Staggered delay
+      viewport={{ once: true }} // Animate only once
       className="relative overflow-hidden max-w-lg m-2 sm:m-4 
-    rounded-xl border border-gray-200 dark:border-gray-700 
-    shadow-2xl shadow-gray-100 dark:shadow-white/10"
-      onMouseEnter={() => setVisible(true)}
-      onMouseLeave={() => setVisible(false)}
-      ref={divRef}
-      onMouseMove={handleMouseMove}
+      rounded-xl border border-gray-200 dark:border-gray-700 
+      shadow-2xl shadow-gray-100 dark:shadow-white/10 group"
+      onMouseEnter={() => setVisible(true)} // Show gradient on hover
+      onMouseLeave={() => setVisible(false)} // Hide gradient on leave
+      ref={divRef} // Attach DOM ref
+      onMouseMove={handleMouseMove} // Track mouse movement
     >
+      {/* Animated gradient effect */}
       <div
         className={`pointer-events-none blur-2xl rounded-full bg-gradient-to-r 
-      from-blue-500 via-indigo-500 to-purple-500 
-      w-[300px] h-[300px] absolute z-0 transition-opacity 
-      duration-500 mix-blend-lighten ${visible ? "opacity-70" : "opacity-0"}`}
+        from-blue-500 via-indigo-500 to-purple-500 
+        w-[300px] h-[300px] absolute z-0 transition-opacity 
+        duration-500 mix-blend-lighten ${visible ? "opacity-70" : "opacity-0"}`}
+        // Position gradient at mouse location (centered)
         style={{ top: position.y - 150, left: position.x - 150 }}
       />
+
+      {/* Card content */}
       <div
         className="flex items-center gap-10 p-8 hover:p-7.5 hover:m-0.5 transition-all 
         rounded-[10px] bg-white dark:bg-gray-900 z-10 relative"
       >
+        {/* Service icon container */}
         <div className="bg-gray-100 dark:bg-gray-700 rounded-full">
           <img
             src={service.icon}
-            alt=""
+            alt={service.title}
             className="max-w-24 bg-white dark:bg-gray-700 rounded-full m-2"
           />
         </div>
+
+        {/* Service text content */}
         <div className="flex-1">
-          <h3 className="font-bold">{service.title}</h3>
-          <p className="text-sm mt-2">{service.description}</p>
+          <h3 className="font-bold text-lg group-hover:text-primary transition-colors">
+            {service.title}
+          </h3>
+          <p className="text-sm mt-2 text-gray-600 dark:text-gray-300">
+            {service.description}
+          </p>
         </div>
       </div>
     </motion.div>
